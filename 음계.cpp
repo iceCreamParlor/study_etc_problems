@@ -25,8 +25,6 @@ int main()
 	}
 	sort(&ascend[0], &ascend[7]+1);
 	sort(&descend[0], &descend[7]+1, cmp);
-	for(auto itr= &descend[0] ; itr!= &(descend[7])+1 ; itr++)
-		printf("%d ", *itr);
 	if( compare(da, ascend) )	printf("ascending");
 	else if( compare(da, descend) )	printf("descending");
 	else printf("mixed");
