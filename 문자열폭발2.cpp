@@ -4,18 +4,30 @@
 #include <iostream>
 
 using namespace std;
-stack<char> mystack;
+stack<char> mystack, answer;
 int main()
 {
 	freopen("input.txt", "r", stdin);
 	char c;
 	string str, bomb;
-	while (scanf("%c", &c) != '\n')
-	{
-		mystack.push(c);
-	}
+	int cnt= 0;
+	getline(cin, str);
 	getline(cin, bomb);
 	int length = bomb.size();
-	printf("%d", mystack.top());
+	for(int i=0; i< str.size(); i++){
+		mystack.push( str[i] );
+		if( str[i] == bomb[cnt] ){
+			if(cnt == bomb.size()-1){
+				cnt= 0;
+				for(int k=0; k< bomb.size(); k++){
+					mystack.pop();
+				}
+			}
+			else{
+				cnt++;
+			}
+		}
+	}
+	
 	return 0;
 }
