@@ -1,85 +1,61 @@
-// ¤µ¤² ¿Ö¾ÈµÅ
-
-#include <stdio.h>
-#include <algorithm>
-#include <queue>
-#define MAX 1010
-
+#include<iostream>
+#include<cstdio>
+#include<queue>
 using namespace std;
-struct node
-{
-	int row, col, depth;
-};
-queue<node> q;
-int tomato[MAX][MAX], check[MAX][MAX];
-int infected, maxim;
-
-void print(int row, int col){
-	printf("\n");
-	for(int i=0; i< row; i++){
-		for(int j=0; j< col; j++){
-			printf("%d ", tomato[i][j]);
-		}printf("\n");
-	}
-}
+int map[1001][1001];
+int check[1001][1001];
+int m,n;
+int dx[5] = {1,-1,0,0};
+int dy[5] = {0,0,1,-1};
 int main()
 {
-	freopen("input.txt", "r", stdin);
-	int row, col;
-	scanf("%d %d", &col, &row);
-	for(int i=0; i< row; i++){
-		for(int j=0; j< col; j++){
-			scanf("%d", &tomato[i][j] );
-		}
-	}
-	for(int i=0; i< row; i++){
-		for(int j=0; j< col; j++){
-			if( tomato[i][j]== 1 ){
-				node temp;
-				temp.row= i; temp.col=j; temp.depth=0;
-				q.push(temp);
-				infected++;
-			}
-		}
-	}
-	while(q.size()){
-		//print(row, col);
-		node now= q.front(); q.pop();
-		check[now.row][now.col]= 1;
-		//printf("%d %d %d\n", now.row, now.col, now.depth);
-		if( ((now.row)-1 >=0)&& tomato[(now.row)-1][now.col]==0 && !check[now.row-1][now.col] ){
-			tomato[(now.row)-1][now.col]= 1;
-			node temp;	temp.row= (now.row)-1; temp.col= now.col; temp.depth= now.depth+1;
-			q.push( temp );
-			infected++; maxim= temp.depth;
-			check[now.row-1][now.col] =1;
-		} // up
-		if( ((now.col)-1 >=0)&& tomato[now.row][(now.col)-1]==0 && !check[now.row][now.col-1] ){
-			tomato[row][(now.col)-1]= 1;
-			node temp;	temp.row= now.row; temp.col= (now.col)-1; temp.depth= now.depth+1;
-			q.push( temp );
-			infected++; maxim= temp.depth;
-			check[now.row][now.col-1] =1;
-		}  // left
-		if( ((now.col)+1 < col)&& tomato[now.row][(now.col)+1]==0 && !check[now.row][now.col+1] ){
-			tomato[now.row][now.col+1]= 1;
-			node temp;	temp.row= now.row; temp.col= (now.col)+1; temp.depth= now.depth+1;
-			q.push( temp );	
-			infected++; maxim= temp.depth;
-			check[now.row][now.col+1] =1;
-		}	//right
-		if( ((now.row)+1 < row)&& tomato[(now.row)+1][col]==0 && !check[now.row+1][now.col] ){
-			tomato[(now.row)+1][now.col]= 1;
-			node temp;	temp.row= (now.row)+1; temp.col= now.col; temp.depth= now.depth+1;
-			q.push( temp );	
-			infected++; maxim= temp.depth;
-			check[now.row+1][now.col] =1;
-		}	// left
-	}
-	//printf("%d", infected);
-	if( infected== row*col  ){
-		printf("%d\n", maxim);
-	}
-	else printf("-1\n");
-	return 0;
+    queue<pair<int,int>> q;
+    scanf("%d %d",&m,&n);
+ 
+    for(int i=0 ; i<n; i++)
+    {
+        for(int j=0; j<m; j++)
+        {
+            scanf("%d",&map[i][j]);
+            check[i][j] = -1;
+            if(map[i][j] == 1){
+                check[i][j] = 0;
+                q.push(make_pair(i,j));
+            }
+        }
+    }
+ 
+    while(!q.empty())
+    {
+        int x = q.front().first;
+        int y = q.front().second;
+        q.pop();
+        for(int i=0; i<4; i++)
+        {
+            int nx = x +dx[i];
+            int ny = y + dy[i];
+            if(map[nx][ny] == 0 && check[nx][ny] == -1 )
+            {
+                if(nx >= 0 && ny >= 0 && nx < n && ny < m)
+                {
+                    check[nx][ny] = check[x][y]+1;
+                    q.push(make_pair(nx,ny));
+                }
+            }
+        }
+    }
+    int maxVal = 0;
+    for(int i= 0 ;i<n; i++){
+        for(int j=0; j<m; j++){
+            if(maxVal < check[i][j])
+                maxVal = check[i][j];
+        }
+    }
+    for(int i=0; i<n; i++){
+        for(int j=0; j<m; j++){
+            if(map[i][j] == 0 && check[i][j] == -1)
+                maxVal = -1;
+        }
+    }
+    cout<<maxVal<<endl;
 }
