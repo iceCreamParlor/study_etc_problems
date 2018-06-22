@@ -1,4 +1,3 @@
-// Not Solved
 #define MAX 100001
 #include <cstdio>
 #include <algorithm>
@@ -6,8 +5,7 @@
 using namespace std;
 
 int num;
-int col[MAX];
-int used[MAX];
+int col[MAX], check[MAX];
 int cal= 0;
 int promising(int i){
 	int k, result;
@@ -21,22 +19,22 @@ int promising(int i){
 	return result;
 }
 void dfs(int i){
-	cal++;
-	for(int j=1; j<=num; j++){
-		if(promising(i) && !used[j]){
+		if(promising(i)){
 			if(i == num){
 				for(int j=1; j<=num; j++){
 					printf("%d\n", col[j]);
 				}
-				printf("\n%d\n", cal);
 				exit(0) ;
 			}else{
+				for(int j=1; j<=num; j++){
+					cal++;
+					if(check[i]) continue;
 					col[i+1] = j;
-					used[j] = 1;
+					check[i] = 1;
 					dfs(i+1);
-					used[j] = 0;
+					check[i] = 0;
 				}
-		}
+			}
 	}
 }
 int main(){
