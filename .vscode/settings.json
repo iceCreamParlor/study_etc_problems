@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "__tree": "cpp",
+        "__locale": "cpp",
+        "utility": "cpp",
+        "__string": "cpp",
+        "string": "cpp",
+        "string_view": "cpp"
+    }
+}
