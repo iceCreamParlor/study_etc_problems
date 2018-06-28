@@ -30,6 +30,7 @@
         "atomic": "cpp",
         "ios": "cpp",
         "system_error": "cpp",
-        "chrono": "cpp"
+        "chrono": "cpp",
+        "iosfwd": "cpp"
     }
 }
