@@ -1,2 +1,7 @@
-5 20
-99 101 1000 0 97
+5
+
+21 Dohyun
+20 Sunyoung
+22 Heejae
+21 Junkyu
+22 Soyun
