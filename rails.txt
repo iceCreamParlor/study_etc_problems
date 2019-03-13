@@ -1,0 +1,114 @@
+rails _5.0.6_ new 프로젝트이름
+
+* controller 은 주로 model의 복수형을 사용하는 것이 관례 
+
+컨트롤러는 액션의 집합이다. 컨트롤러 내의 메소드들을 액션이라 부른다
+
+액션으로 정의된 매소드 이름과 html.erb의 파일의 형태를 같게 해야 한다.
+erb를 붙여야만 템플릿 태그를 사용할 수 있다.
+
+application.html.erb이 layout.html의 기능을 하고 <%= yield %>를 통해 바뀌는 부분 설정
+
+config 안에 route.rb 존재
+
+rails g scaffold posts title:string content:text
+
+<%= render 'form', post: @post%>  사용하려면 앞에 _form.html.erb 의 형식의 파일이 잇어야 한다.
+
+new 에넌 @post = Post.new 꼭 있어야 함 / edit에는 없애도 됨 (set_post에 적용되어 있음) -> 특정 게시물에 대한 내용
+
+form_for 사용하면 {"post": {"title":"avcd", "content" : "adsf"}} 로 설정된다
+(기존에는 {"post_title" : "asdf", "post_content" : "asdf"})
+form for에서는 uri 를 명시하지 않아도 기본적으로 컨트롤러에서 명시한 대로 간다.
+
+scaffold에서 form_for을 사용하는 경우, create 뿐만 아니라, new에서도 @post = new Post를 사용해야 한다.
+
+params.require(:post).permit(:title, :content)
+
+flast[:아무 이름] = "넣고 싶은 메세지" 형식으로 사용 
+
+* devise
+gem 'devise'
+bundle install
+rails g devise:install
+
+rails g devise User (railse g model User 이 아님!! )
+
+로그인 하지 않으면 넘어기자 않음
+-> before_action: :authenticate_user! 
+
+유저 계정에 목록 추가 : application controller에서 devise git에 있는 내용 추가 
+
+route 바꾸고 싶을 때
+devise_for :users,
+path: 'user',
+path_names :{sign_in: 'login', sign_out: 'logout'}
+
+댓글 모델 만들기
+rails g model comment content:string post:reference 
+
+* 댓글과 유저 연결하기
+
+rails g migration add_user_to_comment user:references
+-> rake db:drop 하지 않고 테이블 모양 바꾸는 법
+comment 테이블에 user라는 열 추가.
+삭제할 때에는 remove_field이름_from_테이블이름
+
+** 해시태그
+해시태그와 post는 n대 n의 관계를 가진다. post / hashtag / 연결테이블 테이블이 필요함 
+rails g model hashtag title:string
+(해시태그 모델 생성)
+rails g migration create_join_table_hashtags_posts hashtags posts
+
+post 모델에 has_and_belongs_to_many :comments
+마찬가지로 hashtag 모델에 has_and_belongs_to_many :posts
+
+post.rb에 다음의 코드가 추가되어야 함
+accepts_nested_attributes_for :hashtags
+
+post_controller.rb에서 new 액션에 다음과 같은 줄 추가
+3.times { @post.hashtags.new }
+
+form 안에 hashtag 입력창 넣기 (f.field_for : hashtag를 post form 에 속한 하나의 구성요소로 이해)
+<%=f.field_for :hashtags do |hashtag|%>
+	<%=hashtag.label :title%>
+	<%=hashtag.text_field :title%>
+<%end%>
+
+def create
+	@post = Post.new(post_params)
+
+	3.times do |x|
+		tag = hashtag_params[:hashtags_attributes]["#{x}"]["title"]
+		a = Hashtag.find_or_create_by(title: tag)
+
+		@post.hashtags << a
+	end
+end
+
+def hashtag_params
+	params.require(:post).permit(hashtags_attributes: [:title])
+end
+
+** carrierwave (파일업로드 관련 작업)
+gem 'carrierwave'
+rails g uploader Image -> 이미지 관련 업로더와 같은 효과
+
+image_uploader.rb
+storage :file -> 파일로 하면 내 서버에 저장 / 아마존 스고 싶으면 aws로 씀
+storage_dir : 파일 저장 위치 설정
+extension_whitelist : 허용되는 파일의 형식 지정
+
+Post model
+require 'carrierwave/orm/activerecord' 추가 -> environment.rb
+mount_uploader :image_url, ImageUploader -> post 모델의 image_url칼럼에 내가 올린 파일의 주소를 저장해줘!
+
+rails g migration add_image_url_to_posts image_url:string
+
+이미지 입력받기
+def post_params
+	params.require(:post).permit(:title, :content, :image_url)
+end
+
+이미지 출력하기
+<%=image_tag(@post.image_url)%>

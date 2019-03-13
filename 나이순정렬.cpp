@@ -1,47 +1,27 @@
-#include <cstdio>
-#include <queue>
-#include <string>
+//stable_sort()를 이용하면 나이가 같을 때 정렬의 순서가 유지되게 정렬할 수 있습니다.
 #include <iostream>
-
+#include <string>
+#include <algorithm>
+#include <vector>
 using namespace std;
-struct Member{
-    int id;
+struct account {
     int age;
     string name;
-    Member(int id, int age, string name){
-        this->id = id;
-        this->age = age;
-        this->name = name;
-    }
 };
-struct cmp{
-    bool operator()(Member a, Member b){
-        if(a.age == b.age){
-           return a.id > b.id;
-        }else{
-            return a.age > b.age;
-        }
+bool cmp(const account &a, const account &b)
+{
+    return a.age < b.age;
+}
+int main() {
+    int n;
+    cin >> n;
+    vector <account> a(n);
+    for (int i = 0; i < n; i++)
+    {
+        cin >> a[i].age;
+        cin >> a[i].name;
     }
-};
-int main(){
-    freopen("input.txt", "r", stdin);
-    int num;    scanf("%d", &num);
-    int count = 1;
-    priority_queue<Member, vector<Member>, cmp> pq;
-    while(num--){
-        int id;
-        int age;
-        string name;
-        id = count++;
-        scanf("%d", &age);
-        cin >> name;
-        Member member = Member(id, age, name);
-        pq.push(member);
-    }
-    while(!pq.empty()){
-        Member member = pq.top();
-        pq.pop();
-        cout << member.age << " " << member.name << endl;
-    }
-    return 0;
+    stable_sort(a.begin(),a.end(),cmp);
+    for (int i = 0; i < n; i++)
+        cout << a[i].age << ' ' << a[i].name << '\n';
 }
